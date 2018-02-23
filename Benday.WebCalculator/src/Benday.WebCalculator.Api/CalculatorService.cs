@@ -18,5 +18,10 @@ namespace Benday.WebCalculator.Api
         {
             return value1 * value2;
         }
+
+        public double Divide(double value1, double value2)
+        {
+            return value1 / value2;
+        }
     }
 }
