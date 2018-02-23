@@ -4,6 +4,7 @@ using Benday.WebCalculator.WebUi.Controllers;
 using Benday.WebCalculator.WebUi.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Benday.WebCalculator.Tests
@@ -120,7 +121,10 @@ namespace Benday.WebCalculator.Tests
                 UnitTestUtility.GetModel<CalculatorViewModel>(
                     SystemUnderTest.Index());
 
-            var actual = model.Operators;
+            Assert.IsNotNull(model.Operators, 
+                "Operators collection was null.");
+
+            var actual = model.Operators.Select(x => x.Text).ToList();
 
             var expected = new List<string>();
 
@@ -128,9 +132,7 @@ namespace Benday.WebCalculator.Tests
             expected.Add(CalculatorConstants.OperatorAdd);
             expected.Add(CalculatorConstants.OperatorSubtract);
             expected.Add(CalculatorConstants.OperatorMultiply);
-            expected.Add(CalculatorConstants.OperatorDivide);
-
-            Assert.IsNotNull(actual, "Operators collection was null.");
+            expected.Add(CalculatorConstants.OperatorDivide);            
 
             CollectionAssert.AreEqual(expected, actual,
                 "Wrong values in operators collection.");
@@ -156,7 +158,7 @@ namespace Benday.WebCalculator.Tests
                     SystemUnderTest.Calculate(model));
 
             Assert.IsTrue(actual.IsResultValid, "Result should be valid.");
-            Assert.AreEqual<double>(expected, actual.Result, "Result was wrong.");
+            Assert.AreEqual<double>(expected, actual.ResultValue, "Result was wrong.");
             Assert.AreEqual<string>(CalculatorConstants.Message_Success, 
                 actual.Message, "Message was wrong.");
         }
@@ -181,7 +183,7 @@ namespace Benday.WebCalculator.Tests
                     SystemUnderTest.Calculate(model));
 
             Assert.IsTrue(actual.IsResultValid, "Result should be valid.");
-            Assert.AreEqual<double>(expected, actual.Result, "Result was wrong.");
+            Assert.AreEqual<double>(expected, actual.ResultValue, "Result was wrong.");
             Assert.AreEqual<string>(CalculatorConstants.Message_Success,
                 actual.Message, "Message was wrong.");
         }
@@ -206,7 +208,7 @@ namespace Benday.WebCalculator.Tests
                     SystemUnderTest.Calculate(model));
 
             Assert.IsTrue(actual.IsResultValid, "Result should be valid.");
-            Assert.AreEqual<double>(expected, actual.Result, "Result was wrong.");
+            Assert.AreEqual<double>(expected, actual.ResultValue, "Result was wrong.");
             Assert.AreEqual<string>(CalculatorConstants.Message_Success,
                 actual.Message, "Message was wrong.");
         }
@@ -231,7 +233,7 @@ namespace Benday.WebCalculator.Tests
                     SystemUnderTest.Calculate(model));
 
             Assert.IsTrue(actual.IsResultValid, "Result should be valid.");
-            Assert.AreEqual<double>(expected, actual.Result, "Result was wrong.");
+            Assert.AreEqual<double>(expected, actual.ResultValue, "Result was wrong.");
             Assert.AreEqual<string>(CalculatorConstants.Message_Success,
                 actual.Message, "Message was wrong.");
         }
@@ -255,7 +257,7 @@ namespace Benday.WebCalculator.Tests
                     SystemUnderTest.Calculate(model));
 
             Assert.IsFalse(actual.IsResultValid, "Result should not be valid.");
-            Assert.AreEqual<double>(0, actual.Result, "Result was wrong.");
+            Assert.AreEqual<double>(0, actual.ResultValue, "Result was wrong.");
             Assert.AreEqual<string>(CalculatorConstants.Message_CantDivideByZero,
                 actual.Message, "Message was wrong.");
         }

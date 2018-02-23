@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Benday.WebCalculator.Api;
 using Benday.WebCalculator.WebUi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Benday.WebCalculator.WebUi.Controllers
 {
@@ -37,16 +38,20 @@ namespace Benday.WebCalculator.WebUi.Controllers
             return View(model);
         }
 
-        private List<string> GetOperators()
+        private List<SelectListItem> GetOperators()
         {
-            var operators = new List<string>();
+            var operators = new List<SelectListItem>();
 
-            operators.Add(CalculatorConstants.Message_ChooseAnOperator);
+            operators.Add(
+                String.Empty,
+                CalculatorConstants.Message_ChooseAnOperator, 
+                true);
+
             operators.Add(CalculatorConstants.OperatorAdd);
             operators.Add(CalculatorConstants.OperatorSubtract);
             operators.Add(CalculatorConstants.OperatorMultiply);
             operators.Add(CalculatorConstants.OperatorDivide);
-
+            
             return operators;
         }
 
@@ -58,7 +63,7 @@ namespace Benday.WebCalculator.WebUi.Controllers
 
             if (operation == CalculatorConstants.OperatorAdd)
             {
-                model.Result = 
+                model.ResultValue = 
                     _CalculatorService.Add(
                         model.Value1, model.Value2);
                 model.Message = CalculatorConstants.Message_Success;
@@ -66,7 +71,7 @@ namespace Benday.WebCalculator.WebUi.Controllers
             }
             else if (operation == CalculatorConstants.OperatorSubtract)
             {
-                model.Result =
+                model.ResultValue =
                     _CalculatorService.Subtract(
                         model.Value1, model.Value2);
                 model.Message = CalculatorConstants.Message_Success;
@@ -74,7 +79,7 @@ namespace Benday.WebCalculator.WebUi.Controllers
             }
             else if (operation == CalculatorConstants.OperatorMultiply)
             {
-                model.Result =
+                model.ResultValue =
                     _CalculatorService.Multiply(
                         model.Value1, model.Value2);
                 model.Message = CalculatorConstants.Message_Success;
@@ -84,14 +89,14 @@ namespace Benday.WebCalculator.WebUi.Controllers
             {
                 if (model.Value2 == 0d)
                 {
-                    model.Result = 0;
+                    model.ResultValue = 0;
                     model.Message = CalculatorConstants.Message_CantDivideByZero;
                     model.IsResultValid = false;
 
                 }
                 else
                 {
-                    model.Result =
+                    model.ResultValue =
                     _CalculatorService.Divide(
                         model.Value1, model.Value2);
                     model.Message = CalculatorConstants.Message_Success;
@@ -101,11 +106,11 @@ namespace Benday.WebCalculator.WebUi.Controllers
             else
             {
                 model.IsResultValid = false;
-                model.Result = 0;
+                model.ResultValue = 0;
                 model.Message = CalculatorConstants.Message_UnknownOperatorMessage;
             }
 
-            return View(model);
+            return View("Index", model);
         }
     }
 }
