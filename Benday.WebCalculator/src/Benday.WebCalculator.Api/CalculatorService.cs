@@ -2,7 +2,7 @@
 
 namespace Benday.WebCalculator.Api
 {
-    public class CalculatorService 
+    public class CalculatorService : ICalculatorService
     {
         public double Add(double value1, double value2)
         {

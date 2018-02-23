@@ -1,3 +1,4 @@
+using Benday.WebCalculator.Api;
 using Benday.WebCalculator.WebUi;
 using Benday.WebCalculator.WebUi.Controllers;
 using Benday.WebCalculator.WebUi.Models;
@@ -24,7 +25,8 @@ namespace Benday.WebCalculator.Tests
             {
                 if (_SystemUnderTest == null)
                 {
-                    _SystemUnderTest = new CalculatorController();
+                    _SystemUnderTest = new CalculatorController(
+                        new CalculatorService());
                 }
 
                 return _SystemUnderTest;
@@ -84,6 +86,34 @@ namespace Benday.WebCalculator.Tests
         }
 
         [TestMethod]
+        public void CalculatorController_Index_Model_MessageIsInitialized()
+        {
+            var model =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Index());
+
+            var actual = model.Message;
+
+            var expected = String.Empty;
+
+            Assert.AreEqual<string>(expected, actual, "Message field value was wrong.");
+        }
+
+        [TestMethod]
+        public void CalculatorController_Index_Model_IsResultValidShouldBeFalse()
+        {
+            var model =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Index());
+
+            var actual = model.IsResultValid;
+
+            var expected = false;
+
+            Assert.AreEqual<bool>(expected, actual, "IsResultValid field value was wrong.");
+        }
+
+        [TestMethod]
         public void CalculatorController_Index_Model_OperatorsCollectionIsPopulated()
         {
             var model =
@@ -95,15 +125,139 @@ namespace Benday.WebCalculator.Tests
             var expected = new List<string>();
 
             expected.Add(CalculatorConstants.Message_ChooseAnOperator);
-            expected.Add("Add");
-            expected.Add("Subtract");
-            expected.Add("Multiply");
-            expected.Add("Divide");
+            expected.Add(CalculatorConstants.OperatorAdd);
+            expected.Add(CalculatorConstants.OperatorSubtract);
+            expected.Add(CalculatorConstants.OperatorMultiply);
+            expected.Add(CalculatorConstants.OperatorDivide);
 
             Assert.IsNotNull(actual, "Operators collection was null.");
 
             CollectionAssert.AreEqual(expected, actual,
                 "Wrong values in operators collection.");
+        }
+
+        [TestMethod]
+        public void CalculatorController_Calculator_Add()
+        {
+            var model =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Index());
+
+            double value1 = 2;
+            double value2 = 3;
+            double expected = 5;
+
+            model.Value1 = value1;
+            model.Value2 = value2;
+            model.Operator = CalculatorConstants.OperatorAdd;
+
+            var actual =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Calculate(model));
+
+            Assert.IsTrue(actual.IsResultValid, "Result should be valid.");
+            Assert.AreEqual<double>(expected, actual.Result, "Result was wrong.");
+            Assert.AreEqual<string>(CalculatorConstants.Message_Success, 
+                actual.Message, "Message was wrong.");
+        }
+
+        [TestMethod]
+        public void CalculatorController_Calculator_Subtract()
+        {
+            var model =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Index());
+
+            double value1 = 2;
+            double value2 = 3;
+            double expected = -1;
+
+            model.Value1 = value1;
+            model.Value2 = value2;
+            model.Operator = CalculatorConstants.OperatorSubtract;
+
+            var actual =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Calculate(model));
+
+            Assert.IsTrue(actual.IsResultValid, "Result should be valid.");
+            Assert.AreEqual<double>(expected, actual.Result, "Result was wrong.");
+            Assert.AreEqual<string>(CalculatorConstants.Message_Success,
+                actual.Message, "Message was wrong.");
+        }
+
+        [TestMethod]
+        public void CalculatorController_Calculator_Multiply()
+        {
+            var model =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Index());
+
+            double value1 = 2;
+            double value2 = 3;
+            double expected = 6;
+
+            model.Value1 = value1;
+            model.Value2 = value2;
+            model.Operator = CalculatorConstants.OperatorMultiply;
+
+            var actual =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Calculate(model));
+
+            Assert.IsTrue(actual.IsResultValid, "Result should be valid.");
+            Assert.AreEqual<double>(expected, actual.Result, "Result was wrong.");
+            Assert.AreEqual<string>(CalculatorConstants.Message_Success,
+                actual.Message, "Message was wrong.");
+        }
+
+        [TestMethod]
+        public void CalculatorController_Calculator_Divide()
+        {
+            var model =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Index());
+
+            double value1 = 8;
+            double value2 = 4;
+            double expected = 2;
+
+            model.Value1 = value1;
+            model.Value2 = value2;
+            model.Operator = CalculatorConstants.OperatorDivide;
+
+            var actual =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Calculate(model));
+
+            Assert.IsTrue(actual.IsResultValid, "Result should be valid.");
+            Assert.AreEqual<double>(expected, actual.Result, "Result was wrong.");
+            Assert.AreEqual<string>(CalculatorConstants.Message_Success,
+                actual.Message, "Message was wrong.");
+        }
+
+        [TestMethod]
+        public void CalculatorController_Calculator_DivideByZero()
+        {
+            var model =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Index());
+
+            double value1 = 8;
+            double value2 = 0;
+            
+            model.Value1 = value1;
+            model.Value2 = value2;
+            model.Operator = CalculatorConstants.OperatorDivide;
+
+            var actual =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Calculate(model));
+
+            Assert.IsFalse(actual.IsResultValid, "Result should not be valid.");
+            Assert.AreEqual<double>(0, actual.Result, "Result was wrong.");
+            Assert.AreEqual<string>(CalculatorConstants.Message_CantDivideByZero,
+                actual.Message, "Message was wrong.");
         }
     }
 }

@@ -12,5 +12,7 @@ namespace Benday.WebCalculator.WebUi.Models
         public double Result { get; set; }
         public List<string> Operators { get; set; }
         public string Operator { get; set; }
+        public string Message { get; set; }
+        public bool IsResultValid { get; set; }
     }
 }
