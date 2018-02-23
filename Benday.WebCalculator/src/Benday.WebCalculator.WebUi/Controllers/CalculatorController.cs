@@ -37,6 +37,28 @@ namespace Benday.WebCalculator.WebUi.Controllers
 
             return View(model);
         }
+        private void PopulateOperators(CalculatorViewModel model, string operation)
+        {
+            model.Operator = operation;
+
+            var operators = GetOperators();
+
+            foreach (var item in operators)
+            {
+                item.Selected = false;
+            }
+
+            var selectThisOperator = (from temp in operators
+                                      where temp.Text == operation
+                                      select temp).FirstOrDefault();
+
+            if (selectThisOperator != null)
+            {
+                selectThisOperator.Selected = true;
+            }
+
+            model.Operators = operators;
+        }
 
         private List<SelectListItem> GetOperators()
         {
@@ -68,6 +90,7 @@ namespace Benday.WebCalculator.WebUi.Controllers
                         model.Value1, model.Value2);
                 model.Message = CalculatorConstants.Message_Success;
                 model.IsResultValid = true;
+                PopulateOperators(model, operation);
             }
             else if (operation == CalculatorConstants.OperatorSubtract)
             {
@@ -76,6 +99,7 @@ namespace Benday.WebCalculator.WebUi.Controllers
                         model.Value1, model.Value2);
                 model.Message = CalculatorConstants.Message_Success;
                 model.IsResultValid = true;
+                PopulateOperators(model, operation);
             }
             else if (operation == CalculatorConstants.OperatorMultiply)
             {
@@ -84,6 +108,7 @@ namespace Benday.WebCalculator.WebUi.Controllers
                         model.Value1, model.Value2);
                 model.Message = CalculatorConstants.Message_Success;
                 model.IsResultValid = true;
+                PopulateOperators(model, operation);
             }
             else if (operation == CalculatorConstants.OperatorDivide)
             {
@@ -92,7 +117,7 @@ namespace Benday.WebCalculator.WebUi.Controllers
                     model.ResultValue = 0;
                     model.Message = CalculatorConstants.Message_CantDivideByZero;
                     model.IsResultValid = false;
-
+                    PopulateOperators(model, operation);
                 }
                 else
                 {
@@ -101,6 +126,7 @@ namespace Benday.WebCalculator.WebUi.Controllers
                         model.Value1, model.Value2);
                     model.Message = CalculatorConstants.Message_Success;
                     model.IsResultValid = true;
+                    PopulateOperators(model, operation);
                 }                
             }
             else

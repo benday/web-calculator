@@ -161,6 +161,49 @@ namespace Benday.WebCalculator.Tests
             Assert.AreEqual<double>(expected, actual.ResultValue, "Result was wrong.");
             Assert.AreEqual<string>(CalculatorConstants.Message_Success, 
                 actual.Message, "Message was wrong.");
+
+            AssertOperatorsAndSelectedOperator(model, 
+                CalculatorConstants.OperatorAdd);
+        }
+        private void AssertOperatorsAndSelectedOperator(
+            CalculatorViewModel model, string expectedSelectedOperator)
+        {
+            Assert.IsNotNull(model.Operators, "Operators collection was null.");
+
+            var actual = model.Operators.Select(x => x.Text).ToList();
+
+            var expected = new List<string>();
+
+            expected.Add(CalculatorConstants.Message_ChooseAnOperator);
+            expected.Add(CalculatorConstants.OperatorAdd);
+            expected.Add(CalculatorConstants.OperatorSubtract);
+            expected.Add(CalculatorConstants.OperatorMultiply);
+            expected.Add(CalculatorConstants.OperatorDivide);
+
+            CollectionAssert.AreEqual(expected, actual, 
+                "Operators in collecation were wrong.");
+
+            AssertSelectedOperator(model, expectedSelectedOperator);
+        }
+
+        private void AssertSelectedOperator(
+            CalculatorViewModel model, string expectedSelectedOperator)
+        {
+            Assert.IsNotNull(model.Operators, "Operators collection was null.");
+
+            Assert.AreEqual<string>(expectedSelectedOperator, model.Operator, "Operator property was wrong.");
+
+            var match = (from temp in model.Operators
+                         where temp.Text == expectedSelectedOperator
+                         select temp).FirstOrDefault();
+
+            Assert.IsNotNull(match, 
+                "Could not find '{0}' in Operators.", 
+                expectedSelectedOperator);
+
+            Assert.IsTrue(match.Selected, 
+                "Operator '{0}' should have been selected.", 
+                expectedSelectedOperator);
         }
 
         [TestMethod]
@@ -186,6 +229,9 @@ namespace Benday.WebCalculator.Tests
             Assert.AreEqual<double>(expected, actual.ResultValue, "Result was wrong.");
             Assert.AreEqual<string>(CalculatorConstants.Message_Success,
                 actual.Message, "Message was wrong.");
+
+            AssertOperatorsAndSelectedOperator(model,
+                CalculatorConstants.OperatorSubtract);
         }
 
         [TestMethod]
@@ -211,6 +257,9 @@ namespace Benday.WebCalculator.Tests
             Assert.AreEqual<double>(expected, actual.ResultValue, "Result was wrong.");
             Assert.AreEqual<string>(CalculatorConstants.Message_Success,
                 actual.Message, "Message was wrong.");
+
+            AssertOperatorsAndSelectedOperator(model,
+                CalculatorConstants.OperatorMultiply);
         }
 
         [TestMethod]
@@ -236,6 +285,9 @@ namespace Benday.WebCalculator.Tests
             Assert.AreEqual<double>(expected, actual.ResultValue, "Result was wrong.");
             Assert.AreEqual<string>(CalculatorConstants.Message_Success,
                 actual.Message, "Message was wrong.");
+
+            AssertOperatorsAndSelectedOperator(model,
+                CalculatorConstants.OperatorDivide);
         }
 
         [TestMethod]
@@ -260,6 +312,9 @@ namespace Benday.WebCalculator.Tests
             Assert.AreEqual<double>(0, actual.ResultValue, "Result was wrong.");
             Assert.AreEqual<string>(CalculatorConstants.Message_CantDivideByZero,
                 actual.Message, "Message was wrong.");
+
+            AssertOperatorsAndSelectedOperator(model,
+                CalculatorConstants.OperatorDivide);
         }
     }
 }
