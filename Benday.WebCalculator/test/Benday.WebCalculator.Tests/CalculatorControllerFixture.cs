@@ -316,5 +316,31 @@ namespace Benday.WebCalculator.Tests
             AssertOperatorsAndSelectedOperator(model,
                 CalculatorConstants.OperatorDivide);
         }
+
+        [TestMethod]
+        public void CalculatorController_Calculator_NoOperatorSelected()
+        {
+            var model = new CalculatorViewModel();
+
+            double value1 = 2;
+            double value2 = 3;
+            double expected = 0;
+
+            model.Value1 = value1;
+            model.Value2 = value2;
+            model.Operator = CalculatorConstants.Message_ChooseAnOperator;
+
+            var actual =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Calculate(model));
+
+            Assert.IsFalse(actual.IsResultValid, "Result should be valid.");
+            Assert.AreEqual<double>(expected, actual.ResultValue, "Result was wrong.");
+            Assert.AreEqual<string>(CalculatorConstants.Message_UnknownOperatorMessage,
+                actual.Message, "Message was wrong.");
+
+            AssertOperatorsAndSelectedOperator(model,
+                CalculatorConstants.Message_ChooseAnOperator);
+        }
     }
 }

@@ -134,6 +134,7 @@ namespace Benday.WebCalculator.WebUi.Controllers
                 model.IsResultValid = false;
                 model.ResultValue = 0;
                 model.Message = CalculatorConstants.Message_UnknownOperatorMessage;
+                PopulateOperators(model, operation);
             }
 
             return View("Index", model);
