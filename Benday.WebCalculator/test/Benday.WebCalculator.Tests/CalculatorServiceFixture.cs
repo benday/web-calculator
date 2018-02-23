@@ -51,5 +51,18 @@ namespace Benday.WebCalculator.Tests
 
             Assert.AreEqual<double>(expected, actual, "Wrong result.");
         }
+
+        [TestMethod]
+        public void CalculatorService_Multiply()
+        {
+            double value1 = 3;
+            double value2 = 2;
+
+            double expected = 6;
+
+            double actual = SystemUnderTest.Multiply(value1, value2);
+
+            Assert.AreEqual<double>(expected, actual, "Wrong result.");
+        }
     }
 }
