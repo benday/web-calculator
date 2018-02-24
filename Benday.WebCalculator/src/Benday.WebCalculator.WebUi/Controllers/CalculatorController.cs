@@ -6,21 +6,29 @@ using Benday.WebCalculator.Api;
 using Benday.WebCalculator.WebUi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
 
 namespace Benday.WebCalculator.WebUi.Controllers
 {
     public class CalculatorController : Controller
     {
         private ICalculatorService _CalculatorService;
+        private IConfiguration _Configuration;
 
-        public CalculatorController(ICalculatorService calculator)
+        public CalculatorController(ICalculatorService calculator, IConfiguration config)
         {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config), $"{nameof(config)} is null.");
+            }
+
             if (calculator == null)
             {
                 throw new ArgumentNullException(nameof(calculator), $"{nameof(calculator)} is null.");
             }
 
             _CalculatorService = calculator;
+            _Configuration = config;
         }
 
         public IActionResult Index()
@@ -35,8 +43,25 @@ namespace Benday.WebCalculator.WebUi.Controllers
 
             model.IsResultValid = false;
 
+            model.BuildVersionMessage = GetBuildVersionMessage();
+
             return View(model);
         }
+
+        private string GetBuildVersionMessage()
+        {
+            var value = _Configuration["CalculatorSettings:BuildVersionMessage"];
+
+            if (value == null)
+            {
+                return "(not set)";
+            }
+            else
+            {
+                return value;
+            }
+        }
+
         private void PopulateOperators(CalculatorViewModel model, string operation)
         {
             model.Operator = operation;
@@ -136,6 +161,8 @@ namespace Benday.WebCalculator.WebUi.Controllers
                 model.Message = CalculatorConstants.Message_UnknownOperatorMessage;
                 PopulateOperators(model, operation);
             }
+
+            model.BuildVersionMessage = GetBuildVersionMessage();
 
             return View("Index", model);
         }

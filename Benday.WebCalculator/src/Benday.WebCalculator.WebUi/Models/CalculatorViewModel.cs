@@ -28,5 +28,8 @@ namespace Benday.WebCalculator.WebUi.Models
 
         [Display(Name = "Is Result Valid")]
         public bool IsResultValid { get; set; }
+
+        [Display(Name = "Build Version Message")]
+        public string BuildVersionMessage { get; set; }
     }
 }

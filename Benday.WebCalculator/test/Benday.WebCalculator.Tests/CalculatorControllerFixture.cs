@@ -6,6 +6,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 
 namespace Benday.WebCalculator.Tests
 {
@@ -16,6 +18,7 @@ namespace Benday.WebCalculator.Tests
         public void OnTestInitialize()
         {
             _SystemUnderTest = null;
+            _ConfigurationInstance = null;
         }
 
         private CalculatorController _SystemUnderTest;
@@ -27,12 +30,27 @@ namespace Benday.WebCalculator.Tests
                 if (_SystemUnderTest == null)
                 {
                     _SystemUnderTest = new CalculatorController(
-                        new CalculatorService());
+                        new CalculatorService(), ConfigurationInstance);
                 }
 
                 return _SystemUnderTest;
             }
         }
+
+        private ConfigurationMock _ConfigurationInstance;
+        public ConfigurationMock ConfigurationInstance
+        {
+            get
+            {
+                if (_ConfigurationInstance == null)
+                {
+                    _ConfigurationInstance = new ConfigurationMock();
+                }
+
+                return _ConfigurationInstance;
+            }
+        }
+        
 
         [TestMethod]
         public void CalculatorController_Index_ModelIsNotNull()
@@ -70,6 +88,36 @@ namespace Benday.WebCalculator.Tests
             var expected = 0d;
 
             Assert.AreEqual<double>(expected, actual, "Value2 field value was wrong.");
+        }
+
+        [TestMethod]
+        public void CalculatorController_Index_Model_BuildVersionMessage_IfNull()
+        {
+            var model =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Index());
+
+            var actual = model.BuildVersionMessage;
+
+            var expected = "(not set)";
+
+            Assert.AreEqual<string>(expected, actual, "BuildVersionMessage field value was wrong.");
+        }
+
+        [TestMethod]
+        public void CalculatorController_Index_Model_BuildVersionMessage_IfNotNull()
+        {
+            var expected = "hi!";
+
+            ConfigurationInstance.IndexerReturnValue = expected;
+
+            var model =
+                UnitTestUtility.GetModel<CalculatorViewModel>(
+                    SystemUnderTest.Index());
+
+            var actual = model.BuildVersionMessage;            
+
+            Assert.AreEqual<string>(expected, actual, "BuildVersionMessage field value was wrong.");
         }
 
         [TestMethod]
@@ -139,7 +187,7 @@ namespace Benday.WebCalculator.Tests
         }
 
         [TestMethod]
-        public void CalculatorController_Calculator_Add()
+        public void CalculatorController_Calculate_Add()
         {
             var model =
                 UnitTestUtility.GetModel<CalculatorViewModel>(
@@ -207,7 +255,7 @@ namespace Benday.WebCalculator.Tests
         }
 
         [TestMethod]
-        public void CalculatorController_Calculator_Subtract()
+        public void CalculatorController_Calculate_Subtract()
         {
             var model =
                 UnitTestUtility.GetModel<CalculatorViewModel>(
@@ -235,7 +283,7 @@ namespace Benday.WebCalculator.Tests
         }
 
         [TestMethod]
-        public void CalculatorController_Calculator_Multiply()
+        public void CalculatorController_Calculate_Multiply()
         {
             var model =
                 UnitTestUtility.GetModel<CalculatorViewModel>(
@@ -263,7 +311,7 @@ namespace Benday.WebCalculator.Tests
         }
 
         [TestMethod]
-        public void CalculatorController_Calculator_Divide()
+        public void CalculatorController_Calculate_Divide()
         {
             var model =
                 UnitTestUtility.GetModel<CalculatorViewModel>(
@@ -291,7 +339,7 @@ namespace Benday.WebCalculator.Tests
         }
 
         [TestMethod]
-        public void CalculatorController_Calculator_DivideByZero()
+        public void CalculatorController_Calculate_DivideByZero()
         {
             var model =
                 UnitTestUtility.GetModel<CalculatorViewModel>(
@@ -318,7 +366,7 @@ namespace Benday.WebCalculator.Tests
         }
 
         [TestMethod]
-        public void CalculatorController_Calculator_NoOperatorSelected()
+        public void CalculatorController_Calculate_NoOperatorSelected()
         {
             var model = new CalculatorViewModel();
 
@@ -338,6 +386,9 @@ namespace Benday.WebCalculator.Tests
             Assert.AreEqual<double>(expected, actual.ResultValue, "Result was wrong.");
             Assert.AreEqual<string>(CalculatorConstants.Message_UnknownOperatorMessage,
                 actual.Message, "Message was wrong.");
+
+            Assert.AreEqual<string>("(not set)", actual.BuildVersionMessage, 
+                "BuildVersionMessage was wrong.");
 
             AssertOperatorsAndSelectedOperator(model,
                 CalculatorConstants.Message_ChooseAnOperator);

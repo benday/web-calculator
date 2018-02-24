@@ -50,7 +50,12 @@
             <div class="form-group">
                 <label asp-for="IsResultValid" class="control-label"></label>: @Model.IsResultValid
             </div>
-
+            
+            <div class="form-group">
+                <label asp-for="BuildVersionMessage" class="control-label"></label>
+                @Html.DisplayFor(x => x.BuildVersionMessage)
+                <span asp-validation-for="BuildVersionMessage" class="text-danger"></span>
+            </div>
         </form>
     </div>
 </div>
